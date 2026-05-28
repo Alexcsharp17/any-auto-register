@@ -1062,6 +1062,10 @@ def is_herosms_phone_cache_alive(config: dict | None = None) -> tuple[bool, dict
 
 def create_sms_provider(provider_key: str, config: dict) -> BaseSmsProvider:
     """Create an SMS provider instance from config."""
+    if provider_key in ("sspanel_harness", "telegram_sspanel", "sspanel_telegram"):
+        from providers.sms.sspanel_harness import SSPanelHarnessTelegramProvider
+
+        return SSPanelHarnessTelegramProvider.from_config(config)
     if provider_key in ("sms_activate", "sms_activate_api"):
         api_key = config.get("sms_activate_api_key", "")
         if not api_key:

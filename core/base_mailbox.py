@@ -242,6 +242,12 @@ def _create_local_ms_pool(extra: dict, proxy: str | None) -> 'BaseMailbox':
     )
 
 
+def _create_proton_harness(extra: dict, proxy: str | None) -> 'BaseMailbox':
+    from providers.mailbox.proton_harness import ProtonHarnessMailbox
+
+    return ProtonHarnessMailbox.from_config(extra)
+
+
 def _create_laoudo(extra: dict, proxy: str | None) -> 'BaseMailbox':
     return LaoudoMailbox(
         auth_token=extra.get("laoudo_auth", ""),
@@ -271,6 +277,7 @@ MAILBOX_FACTORY_REGISTRY = {
     "cfworker_admin_api": _create_cfworker,
     "testmail_api": _create_testmail,
     "local_ms_pool": _create_local_ms_pool,
+    "proton_harness": _create_proton_harness,
     "laoudo_api": _create_laoudo,
     # backward-compat fallback
     "generic_http": _create_generic_http,
@@ -282,6 +289,7 @@ MAILBOX_FACTORY_REGISTRY = {
     "cfworker": _create_cfworker,
     "testmail": _create_testmail,
     "local_ms": _create_local_ms_pool,
+    "proton": _create_proton_harness,
     "laoudo": _create_laoudo,
 }
 
