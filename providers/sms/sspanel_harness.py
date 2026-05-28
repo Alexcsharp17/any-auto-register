@@ -116,6 +116,39 @@ class HarnessBindingRecorder:
             raise RuntimeError(completed.stderr.strip() or completed.stdout.strip() or "provider-bindings record failed")
         return json.loads(completed.stdout.strip() or "{}")
 
+    def record_action(
+        self,
+        *,
+        telegram_id: str,
+        bot_username: str,
+        action_type: str,
+        status: str,
+        payload: str | None = None,
+        executor: str = "",
+    ) -> dict:
+        cmd = [
+            str(self.script),
+            "--db",
+            str(self.db_path),
+            "record-action",
+            "--telegram-id",
+            telegram_id,
+            "--bot-username",
+            bot_username,
+            "--action-type",
+            action_type,
+            "--status",
+            status,
+        ]
+        if payload:
+            cmd.extend(["--payload", payload])
+        if executor:
+            cmd.extend(["--executor", executor])
+        completed = subprocess.run(cmd, text=True, capture_output=True, check=False)
+        if completed.returncode != 0:
+            raise RuntimeError(completed.stderr.strip() or completed.stdout.strip() or "provider-bindings record-action failed")
+        return json.loads(completed.stdout.strip() or "{}")
+
 
 @register_provider("sms", "sspanel_harness")
 class SSPanelHarnessTelegramProvider(BaseSmsProvider):

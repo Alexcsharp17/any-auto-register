@@ -107,7 +107,7 @@ def test_freeaisub_checkin_calls_sspanel_with_messages_and_records(monkeypatch, 
             # Возвращаем список исключений, включая наш целевой ID
             # Но core.py должен вырезать его из списка перед отправкой в SSPanel
             return SimpleNamespace(returncode=0, stdout='["111","8137700718"]\n', stderr="")
-        if "record" in cmd:
+        if any("record" in arg for arg in cmd):
             return SimpleNamespace(returncode=0, stdout='{"ok": true, "status": "success"}', stderr="")
         raise AssertionError(cmd)
 

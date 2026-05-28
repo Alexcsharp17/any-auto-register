@@ -1,6 +1,7 @@
 """freeaisub (智联 free ai) platform core implementation."""
 from __future__ import annotations
 
+import json
 import logging
 from typing import Callable
 from providers.sms.sspanel_harness import SSPanelHarnessTelegramProvider, TelegramBotActivationResult
@@ -91,16 +92,17 @@ class FreeaisubHarness:
         response.raise_for_status()
         raw_response = response.json()
         
-        # Записываем результат операции
-        record_result = self.provider.recorder.record(
-            provider="freeaisub",
-            provider_account_ref=provider_account_ref,
-            start_link=FREEAISUB_BOT_LINK,
-            response=raw_response,
+        first = self.provider._first_result(raw_response)
+
+        # Записываем результат операции в историю действий
+        record_result = self.provider.recorder.record_action(
+            telegram_id=telegram_id,
+            bot_username="@freeaisub_bot",
+            action_type="checkin",
+            status=self.provider._classify(first),
+            payload=json.dumps(raw_response, ensure_ascii=False),
             executor=self.provider.executor,
         )
-        
-        first = self.provider._first_result(raw_response)
         return TelegramBotActivationResult(
             provider="freeaisub",
             start_link=FREEAISUB_BOT_LINK,
